@@ -15,8 +15,9 @@ int main(int argc, char *argv[])
 
 	// we need to take up space so that we have a nice offset
 	// to easily find the desired address
-	// int *a = (int *) malloc(2 * sizeof(int));
-	int a = 134524940; 
+	// pretty much the same role as we did in the first part of the lab
+	int a = 134524940;
+
 	/* The secret value is stored on the heap */
     secret = (int *) malloc(2*sizeof(int));
     /* getting the secret */

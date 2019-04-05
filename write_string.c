@@ -14,7 +14,7 @@ int main()
     
     /* Putting any number you like at the beginning of the format string */
     address = (unsigned int *) buf;
-    *address = 0x804b01c;
+    *address = 0x804b00c;
     
     /* Getting the rest of the format string */
     scanf("%s", buf+4);

@@ -25,14 +25,14 @@ int main(int argc, char *argv[])
     printf("secret[1]'s address is 0x%8x (on heap)\n", (unsigned int)&secret[1]);
     
     printf("Please enter a decimal integer\n");
-    scanf("%d", &int_input);  /* getting an input from user */
+//    scanf("%d", &int_input);  /* getting an input from user */
     printf("Please enter a string\n");
     scanf("%s", user_input); /* getting a string from user */
     
     /* Vulnerable place */
     printf(user_input);
     printf("\n");
-    
+
     /* Verify whether your attack is successful */
     printf("The original secrets: 0x%x -- 0x%x\n", SECRET1, SECRET2);
     printf("The new secrets:      0x%x -- 0x%x\n", secret[0], secret[1]);
